@@ -16,7 +16,22 @@
 #    append measured time to the end of log file
 #   wait D milliseconds
 
-#TODO   Improve logging, accept input parameters
+#upload files to SAFE Network and check time elapsed
+#upload checksums for each file to ensure we are dealing with standardised test files
+
+#Arguments
+INPUT_S=$1
+INPUT_N=$2
+INPUT_D=$3
+
+if [ $# -ne 3 ];
+    then
+    echo " You must supply arguments for testfile size, no of iterations and delay between test runs."
+    echo " Example: random-files-upload-test.sh 100 10 30  will run the test with a filesize of 100k random bytes"
+    echo " 15 iterations with a delay of 30 seconds between each run."
+    exit 1
+fi    
+
 
 #Setup
 DEST_DIR=/home/$USER/tmp/testnet-file-uploads-$(date +%Y%m%d_%H%M)
@@ -26,28 +41,30 @@ if [[ -d  $DEST_DIR ]]
 fi
 mkdir -p $DEST_DIR && cd $DEST_DIR
 
-# Make sure we don't run out of coins on a long test run
+#safe setup
+
 safe keys create --test-coins --for-cli --preload 10000
+
+
 
 #get parameters
 echo "======================================================================================================="
 echo ""
 echo "This test will upload random data of size S a total of N times with a delay of D between each test run"
-read -p "What size of file do you want to test with?   Units in kb " INPUT_S
+#read -p "What size of file do you want to test with?   Units in kb " INPUT_S
 echo " The test file will be "$INPUT_S" kb."
 echo ""
 echo ""
 # TODO    input validation, default size in, no input case
-echo ""
-echo ""
-read -p "How many times should we repeat this test?    " INPUT_N
-echo "This test will be repeated "$INPUT_N" times."
+
+#read -p "How many times should we repeat this test?    " INPUT_N
+echo "The test will be repeated "$INPUT_N" times."
 # TODO    input validation
 #period of time to wait before repeating the test runs
 echo ""
 echo ""
-read -p "How many seconds should we wait between test runs?     " INPUT_D
-echo "This test will be repeated after a delay of "$INPUT_D" seconds."
+#read -p "How many seconds should we wait between test runs?     " INPUT_D
+echo "The test run will be repeated after a delay of "$INPUT_D" seconds."
 # TODO    input validation
 
 SAFE_VERSION=`safe -V`
@@ -74,15 +91,16 @@ echo "==============================================================="
 loop=1
 while [ $loop -le $INPUT_N ]
 do
-    dd if=/dev/urandom of=$loop_random$INPUT_S.dat bs=1024 count=$INPUT_S > /dev/null
+    dd if=/dev/urandom of=$loop_random$INPUT_S.dat bs=1024 count=$INPUT_S >/dev/null
     (time safe files put $DEST_DIR/$INPUT_S.dat) |& tee -a -i $INPUT_N-data.txt
+    #time safe files put $DEST_DIR/$INPUT_S.dat |tee -a -i $INPUT_N-data.txt
     sleep $INPUT_D
     echo "sleeping for "$INPUT_D" seconds"
     rm -v $DEST_DIR/$INPUT_S.dat
     ((loop++))           
 done
 
-CLOSE_BALANCE=`safe keys balance|tail -n1|cut -f2 -d':'`
+ #CLOSE_BALANCE=`safe keys balance|tail -n1|cut -f2 -d':'`
 echo  "    Test complete for " $INPUT_N " runs of file size " $INPUT_S "kb with delay of " $INPUT_D " seconds between each run"
 echo ""
 echo "=========================================================================================================================="
