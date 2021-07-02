@@ -16,8 +16,7 @@
 #    append measured time to the end of log file
 #   wait D milliseconds
 
-#upload files to SAFE Network and check time elapsed
-#upload checksums for each file to ensure we are dealing with standardised test files
+#TODO   Improve logging, accept input parameters
 
 #Setup
 DEST_DIR=/home/$USER/tmp/testnet-file-uploads-$(date +%Y%m%d_%H%M)
@@ -27,7 +26,8 @@ if [[ -d  $DEST_DIR ]]
 fi
 mkdir -p $DEST_DIR && cd $DEST_DIR
 
-
+# Make sure we don't run out of coins on a long test run
+safe keys create --test-coins --for-cli --preload 10000
 
 #get parameters
 echo "======================================================================================================="
