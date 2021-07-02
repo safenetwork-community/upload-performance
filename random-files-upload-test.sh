@@ -65,7 +65,7 @@ loop=1
 while [ $loop -le $INPUT_N ]
 do
     dd if=/dev/urandom of=$loop_random$INPUT_S.dat bs=1024 count=$INPUT_S >/dev/null
-    (/usr/bin/time -f "\t%e"  safe files put $DEST_DIR/$INPUT_S.dat) |& tee -a -i $INPUT_Nk-data.txt
+    (/usr/bin/time -f "\t%e"  safe files put $DEST_DIR/$INPUT_S.dat) |& tee -a -i $INPUT_N-data.txt
     sleep $INPUT_D
     echo "sleeping for "$INPUT_D" seconds until the next iteration"
     rm  $DEST_DIR/$INPUT_S.dat
