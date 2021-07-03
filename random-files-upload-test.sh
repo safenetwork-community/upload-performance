@@ -44,7 +44,7 @@ safe keys create --test-coins --for-cli --preload 10000
 
 echo "======================================================================================================="
 echo ""
-echo "This test will upload random data of size $INPUT_S" kb for a total of "$INPUT_N" iterations with a delay of "$INPUT_D" seconds between iterations."
+echo "This test will upload random data of size "$INPUT_S" kb for a total of "$INPUT_N" iterations with a delay of "$INPUT_D" seconds between iterations."
 
 SAFE_VERSION=`safe -V`
 NODE_VERSION=`safe node bin-version`
