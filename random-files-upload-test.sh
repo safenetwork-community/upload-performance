@@ -76,13 +76,13 @@ loop=1
 while [ $loop -le $ITERATIONS ]
 do
     echo '"iteration": "'$loop'", "elapsed time": " ' >> output.json
-    dd if=/dev/urandom of=$FILESIZE.dat bs=1024 count=$FILESIZE >/dev/null
-    /usr/bin/time -a -o output.json -f "\t%e" safe files $SAFE_COMMAND $DEST_DIR/$FILESIZE.dat > /dev/null 
+    dd if=/dev/urandom of=test.dat bs=1024 count=$FILESIZE >/dev/null
+    /usr/bin/time -a -o output.json -f "\t%e" safe files $SAFE_COMMAND $DEST_DIR/test.dat > /dev/null 
     #/usr/bin/time -a -o out.json -f '"elapsed time":"\t%E","user time":"\t%U","system time": "\t%S"}' safe files $SAFE_COMMAND $DEST_DIR/$FILESIZE.dat > /dev/null 
     
     sleep $DELAY
     echo "sleeping for "$DELAY" seconds until the next iteration"
-    #rm  $DEST_DIR/$FILESIZE.dat
+    rm  $DEST_DIR/test.dat
     ((loop++))           
 done
 
