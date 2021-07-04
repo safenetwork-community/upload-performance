@@ -39,8 +39,12 @@ mkdir -p $DEST_DIR && cd $DEST_DIR
 
 #safe setup
 
-safe keys create --test-coins --for-cli --preload 10000
+# ################ Next two lines commented out for compatabilty with sn_node0.7.n ###############
 
+#OPEN_BALANCE=`safe keys balance --json|tail -n1|cut -f2 -d':'`
+#echo "This account has a balance of "$OPEN_BALANCE
+
+# #################################################################################################
 
 echo "======================================================================================================="
 echo ""
