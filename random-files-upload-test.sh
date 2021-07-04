@@ -17,9 +17,9 @@
 #   wait D milliseconds
 
 #Arguments
-INPUT_S=$1
-INPUT_N=$2
-INPUT_D=$3
+FILESIZE=$1
+ITERATIONS=$2
+DELAY=$3
 
 if [ $# -ne 3 ];
     then
@@ -37,17 +37,23 @@ if [[ -d  $DEST_DIR ]]
 fi
 mkdir -p $DEST_DIR && cd $DEST_DIR
 
-#safe setup
-
-safe keys create --test-coins --for-cli --preload 10000
-
-
-echo "======================================================================================================="
-echo ""
-echo "This test will upload random data of size "$INPUT_S" kb for a total of "$INPUT_N" iterations with a delay of "$INPUT_D" seconds between iterations."
 
 SAFE_VERSION=`safe -V`
 NODE_VERSION=`safe node bin-version`
+SAFE_COMMAND=put
+#safe setup
+
+#safe keys create --test-coins --for-cli --preload 10000
+
+#logging setup
+touch output.json
+echo '{"testrun":"' `date`'",' \
+    '"safe_version": "'$SAFE_VERSION'", "node_version":"'$NODE_VERSION'", "safe_command":"'$SAFE_COMMAND'",'\
+     '"filesize":"'$FILESIZE'", "no_of_iterations": "'$ITERATIONS'", "delay": "'$DELAY'" , "data":[{' >>output.json
+echo "======================================================================================================="
+echo ""
+echo "This test will upload random data of size "$FILESIZE" kb for a total of "$ITERATIONS" iterations with a delay of "$DELAY" seconds between iterations."
+
 echo ""
 echo "          output files will be written to " $DEST_DIR
 echo ""
@@ -56,24 +62,33 @@ echo "          "$NODE_VERSION
 #echo "         "$AUTH_VERSION
 echo ""
 echo ""
-OPEN_BALANCE=`safe keys balance --json|tail -n1|cut -f2 -d':'`
-echo "This account has a balance of "$OPEN_BALANCE
+
+# ################ Next two lines commented out for compatabilty with sn_node0.7.n ###############
+
+#OPEN_BALANCE=`safe keys balance --json|tail -n1|cut -f2 -d':'`
+#echo "This account has a balance of "$OPEN_BALANCE
+
+# #################################################################################################
 echo ""
 echo "==============================================================="
 
 loop=1
-while [ $loop -le $INPUT_N ]
+while [ $loop -le $ITERATIONS ]
 do
-    dd if=/dev/urandom of=$loop_random$INPUT_S.dat bs=1024 count=$INPUT_S >/dev/null
-    (/usr/bin/time -f "\t%e"  safe files put $DEST_DIR/$INPUT_S.dat) |& tee -a -i $INPUT_N-data.txt
-    sleep $INPUT_D
-    echo "sleeping for "$INPUT_D" seconds until the next iteration"
-    rm  $DEST_DIR/$INPUT_S.dat
+    echo '"iteration": "'$loop'", "elapsed time": " ' >> output.json
+    dd if=/dev/urandom of=$FILESIZE.dat bs=1024 count=$FILESIZE >/dev/null
+   /usr/bin/time -a -o output.json -f "\t%e" safe files $SAFE_COMMAND $DEST_DIR/$FILESIZE.dat > /dev/null 
+    
+    sleep $DELAY
+    echo "sleeping for "$DELAY" seconds until the next iteration"
+    #rm  $DEST_DIR/$FILESIZE.dat
     ((loop++))           
 done
 
  #CLOSE_BALANCE=`safe keys balance|tail -n1|cut -f2 -d':'`
-echo  "    Test complete for " $INPUT_N " runs of file size " $INPUT_S "kb with delay of " $INPUT_D " seconds between each run"
+
+echo '"}' >> output.json
+echo  "    Test complete for " $ITERATIONS " runs of file size " $FILESIZE "kb with delay of " $DELAY " seconds between each run"
 echo ""
 echo "=========================================================================================================================="
-exit
+exit 0
