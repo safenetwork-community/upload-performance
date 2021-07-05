@@ -8,4 +8,4 @@ Usage:  random-files-upload-test.sh 100 15 30  will run the test with a filesize
 
 TODO:
 input validation
-Grab and store CPU RAM info
+Grab and store RAM info
