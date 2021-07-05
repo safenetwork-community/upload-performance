@@ -49,8 +49,8 @@ SAFE_COMMAND=put
 safe keys create --test-coins --for-cli --preload 10000 > /dev/null
 
 #hardware discovery
-CPU_MODEL=$(< /proc/cpuinfo| grep name|head -n1|cut -c 14-)
-CPU_CORES=$(< /proc/cpuinfo| grep -c name)
+CPU_MODEL=`cat /proc/cpuinfo| grep name|head -n1|cut -c 14-`
+CPU_CORES=`cat /proc/cpuinfo| grep -c name`
 
 #logging setup
 touch results-"$(date +%Y%m%d_%H%M)" && ln -s  results-"$(date +%Y%m%d_%H%M)" output.json
